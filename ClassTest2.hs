@@ -21,31 +21,25 @@ import Types
 -- the state should be a triple of the last three tribonachi numbers
 -- the function should return the nth tribonachi number
 -- the state should be updated to reflect the new values
+-- the function should be tail recursive
 -- efficiency is essential
--- the run time should be linear in n
--- the space used should be constant
--- must take into account the functionality of runStateTrib
+
 stateTrib :: Integer -> State (Integer,Integer,Integer) ()
 stateTrib 0 = return ()
+stateTrib 1 = pure ()
 stateTrib n = do
   (a, b, c) <- get
   put (a + b + c, a, b)
   stateTrib (n - 1)
+
+
 
 runStateTrib :: Integer -> Integer
 runStateTrib n =
   let ((),(a,b,c)) = runState (stateTrib n) (1,0,0)
   in a
 
-
-
-
-
--- Question 2 DONE
-
--- Binary trees can have data at both the node and the leaves
--- perform an in-order traversal of the tree
--- log the values of the nodes and leaves using an Either type writer
+-- Question 2
 
 writeLeaves :: Bin a b -> Writer [Either a b] ()
 writeLeaves (Lf a) = tell [Left a]
@@ -54,31 +48,22 @@ writeLeaves (Nd b left right) = do
   tell [Right b]
   writeLeaves right
 
+-- Question 3
 
-
-
-
--- Question 3 DONE
-
--- each leaf is decorated with binary trees
--- collapse the tree by removing the decoration
-
-collapse :: Bin (Bin a b) b -> Bin a b
 collapse (Lf (Lf a)) = Lf a
 collapse (Lf (Nd b left right)) = Nd b (collapse (Lf left)) (collapse (Lf right))
 collapse (Nd b left right) = Nd b (collapse left) (collapse right)
 
 
 
-
-
--- Question 4 DONE
+-- Question 4
 
 -- map a function over the leaves of the tree
 -- the function should be given the address of the leaf currently being processed
 -- the address is a list of directions, L for left and R for right
 -- we must get the address by recording the directions as we recurse down the tree
 -- the address should be the order of directions when recursing down the tree
+
 mapLeavesWithAddress :: (a -> Address -> c) -> Bin a b -> Bin c b
 mapLeavesWithAddress f (Lf a) = Lf (f a [])
 mapLeavesWithAddress f (Nd b left right) = Nd b (mapLeavesWithAddress' f left [L]) (mapLeavesWithAddress' f right [R])
@@ -89,7 +74,10 @@ mapLeavesWithAddress' f (Nd b left right) address = Nd b (mapLeavesWithAddress' 
 
 
 
--- Question 5 DONE
+
+
+-- Question 5
+
 
 -- a quad tree is a binary tree where each node has four children
 -- a pixel is a represented by NW, NE, SW, SE
